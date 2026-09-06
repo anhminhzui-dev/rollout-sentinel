@@ -34,7 +34,8 @@ jobs:
       - uses: actions/setup-python@v5
         with: { python-version: "3.12" }
       - name: The clean batch must pass (VERDICT GO, exit 0)
-        run: python -m rollout_sentinel.cli analyze --rollouts fixtures/batch_clean.jsonl | grep -qx "VERDICT: GO"
+        run: |
+          python -m rollout_sentinel.cli analyze --rollouts fixtures/batch_clean.jsonl | grep -qx "VERDICT: GO"
       - name: The seeded deck must refuse with exit 2 and name its codes in summary.json
         run: |
           set +e
