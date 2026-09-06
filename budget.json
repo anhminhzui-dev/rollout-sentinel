@@ -1,0 +1,8 @@
+{
+  "deck": "fixtures/deck.jsonl",
+  "deck_sha256": "5c7faf222b34e0d4586588a0e57db41c4c2ba2efad1cf4030efaabe2eb2df758",
+  "fn_budget": 0,
+  "fp_budget": 2,
+  "note": "design constants, not validated operating points",
+  "rows": 27
+}

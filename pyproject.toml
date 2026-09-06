@@ -1,0 +1,11 @@
+[project]
+name = "rollout-sentinel"
+version = "0.1.0"
+requires-python = ">=3.10"
+dependencies = []
+license = { text = "Evaluation-Only Licence 1.0 (source-available, not open source); see LICENSE" }
+authors = [{ name = "Vo Ba Hoang Minh" }]
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+testpaths = ["tests"]
