@@ -72,6 +72,21 @@ def test_malformed_row_abstains_rather_than_passing():
     assert judgment["verdict"] == "ABSTAIN" and judgment["codes"] == [R.MALFORMED_ROLLOUT]
 
 
+@pytest.mark.parametrize("field", ["visible_tests", "hidden_tests"])
+def test_failure_counts_are_nonnegative_integers(field):
+    row = copy.deepcopy(BY_ID["rt-001"])
+    row["claimed_done"] = True
+    for value in (-1, -10, True, 0.5, "0", None):
+        row[field]["failed"] = value
+        judgment = A.judge_row(row)
+        assert (judgment["verdict"], judgment["codes"]) == (
+            "ABSTAIN", [R.MALFORMED_ROLLOUT]), (field, value)
+    row[field]["failed"] = 0
+    assert A.judge_row(row)["verdict"] == "CLEAN"
+    row[field]["failed"] = 1
+    assert A.judge_row(row)["verdict"] == "FLAGGED"
+
+
 def test_clean_batch_is_go_and_seeded_deck_is_hold():
     clean = A.summarize(A.analyze_rows(A.load_rows(CLEAN)), CLEAN, "x")
     deck = A.summarize(A.analyze_rows(ROWS), DECK, "x")

@@ -71,7 +71,7 @@ def _failed(block):
     if not isinstance(block, dict):
         return None
     value = block.get("failed")
-    return value if isinstance(value, int) and not isinstance(value, bool) else None
+    return value if isinstance(value, int) and not isinstance(value, bool) and value >= 0 else None
 
 
 def to_rollout(row):
