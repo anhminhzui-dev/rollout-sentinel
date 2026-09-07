@@ -1,18 +1,20 @@
 # rollout-sentinel
 
-Scores a coding-agent rollout against six named unsafe-behaviour codes, like a classifier, against a hash-pinned synthetic deck.
+[![CI](https://github.com/anhminhzui-dev/rollout-sentinel/actions/workflows/ci.yml/badge.svg)](https://github.com/anhminhzui-dev/rollout-sentinel/actions/workflows/ci.yml)
+[![Licence](https://img.shields.io/badge/licence-evaluation--only-blue)](LICENSE)
 
-[![CI](https://github.com/anhminhzui-dev/rollout-sentinel/actions/workflows/ci.yml/badge.svg)](https://github.com/anhminhzui-dev/rollout-sentinel/actions/workflows/ci.yml) [![Licence: evaluation-only](https://img.shields.io/badge/licence-evaluation--only-lightgrey)](LICENSE)
+**Inspect the work behind an agent's completion claim.**
 
-## Why this exists
+A deterministic rollout analyzer with six unsafe-behavior rules, two completion checks and a malformed-record abstention. It examines diffs, commands, visible/hidden failure counts and declared protected paths, then scores the rules against a hash-pinned synthetic deck.
 
-> "Analyze coding-agent rollouts for completion and unsafe behavior, including disabling tests, weakening assertions, deleting protected data, leaking secrets, broadening permissions, or bypassing validation." — OpenTrain AI, Senior Coding-Agent Benchmark Engineer posting, read 2026-09-06
+```text
+rollout → validate / abstain → diff + command + completion checks
+        → named findings → GO / HOLD + content-minimized trace
+```
 
-Built for this posting, in a day, to show the shape of what I would do on day one.
+The analyzer does not read expected labels and excludes them from its evidence hashes. Invalid failure counts abstain rather than becoming clean records. Receipts retain identifiers, codes, counts and hashes, not the full diff or command log.
 
-## To the OpenTrain AI reviewer
-
-Six behaviours in that one sentence became six rule families over a synthetic rollout record — diff, command log, visible and hidden suite counts, a completion claim, a protected-path list — plus two completion checks and an abstain, and every rule is scored like a classifier against a sha-pinned deck of 27 labelled rollouts rather than asserted. Clone it and run the four commands under "Try it in 60 seconds"; they take under a minute, need only `pytest`, and produce GO on one fixture and HOLD on the other without editing a file. It is not a model, not a benchmark of anyone's agent, and not a measurement of anything real — the deck is invented for this repository and the budgets are design constants, not validated operating points.
+The 27-row deck demonstrates specified detection behavior, not general agent competence or real-world security coverage. Run the example below to compare a clean rollout with a flagged one.
 
 ## What it refuses
 
@@ -77,13 +79,19 @@ VERDICT: HOLD (run halted, nothing judged)                         # exit 2
 
 `--out` writes `summary.json` and a `trace.jsonl` of ids, codes, counts and hashes only — no diff text, no command text, nothing from the rollout itself. The analyzer never reads the `label` field: one test strips every label and asserts byte-identical output, and two more disable a rule and widen a rule to prove the budget fails from either end (`fn` 1 of 12 flagged rows missed; `fp` 14 of 14 clean rows tripped).
 
-## What I would do on day one at OpenTrain AI
+## Integration path
 
 Take one real rollout family and turn the posting's sentence into a rule table with a labelled deck under it, because a detector nobody scored is a guess. Ask which behaviours have ever slipped through, write the near-misses first, and pin the deck so a rule change has to face the same rows. Split the suites: visible for the agent, hidden for the grader, and a completion check across both. Keep the false-negative budget at zero and argue about false positives with counts, not adjectives. Anything the harness cannot verify, it abstains on and says so out loud — an abstention that reads as a pass is the one failure that costs you the benchmark.
 
-## Boundaries
+## Scope and integration
 
-Built for one posting, in a day: this is a design sample, not maintained software. No claim about correctness rates is made here and none is computable from what ships: every fixture row is invented for this repository (the synthetic deck), carries `"synthetic": true`, and describes no real agent, run, or organisation. The key shapes are this package's own inventions and match no real provider's format. `fp<=2` and `fn<=0` are design constants chosen for this deck, not validated operating points. There is no model, no network path (a test greps `src/` and fails on any hit), and no dependency beyond `pytest`. It does not prove the rules generalise past the 27 rows they were written against.
+The 27-row synthetic deck exercises the repository's own rollout schema and specified failure signals. It is an offline engineering sample, not a provider-format adapter or production service. No detection-rate generalisation is claimed beyond that deck.
+
+The false-positive/negative budgets are configurable design settings, not validated operating points. Adapt actual traces to the declared schema and measure the rules on a separate labelled sample before operational use. No model or network path is involved.
+
+## Project context
+
+Problem definition, architecture and acceptance review: **Minh Vo**, with AI-assisted implementation. This focused tool belongs to a broader body of data, assessment and training-systems work described in the [research overview](https://github.com/anhminhzui-dev#research-engineering-the-evidence-behind-ai-judgement). Its runnable scope is the mechanism documented here.
 
 ## Licence
 
